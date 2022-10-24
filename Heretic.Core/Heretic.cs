@@ -23,14 +23,14 @@ namespace Heretic
             graphics.ApplyChanges();
 
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;            
+            IsMouseVisible = true;
         }
 
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
             map = new Map();
-            player = new Player();
+            player = new Player(map);
 
             base.Initialize();
         }
@@ -59,7 +59,7 @@ namespace Heretic
 
             // TODO: Add your drawing code here            
             spriteBatch.Begin();
-            
+
             map.Draw(gameTime, spriteBatch);
             player.Draw(gameTime, spriteBatch);
 

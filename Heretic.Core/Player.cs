@@ -28,10 +28,14 @@ namespace Heretic
 
         private double angle;
 
-        public Player()
+        private Map map;
+
+        public Player(Map map)
         {
             position = Settings.PLAYER_POS;
             angle = Settings.PLAYER_ANGLE;
+
+            this.map = map;
         }
 
         public void Update(GameTime gameTime)
@@ -39,7 +43,7 @@ namespace Heretic
             double deltaTime = gameTime.ElapsedGameTime.TotalSeconds;
 
             double sinA = Math.Sin(angle);
-            double cosA = Math.Cos(angle);            
+            double cosA = Math.Cos(angle);
             double speed = Settings.PLAYER_SPEED * deltaTime;
             float speedSin = (float)(speed * sinA);
             float speedCos = (float)(speed * cosA);
@@ -67,8 +71,7 @@ namespace Heretic
                 delta.Y += speedCos;
             }
 
-            position.X += delta.X;
-            position.Y += delta.Y;
+            CheckWallCollision(delta);
 
             if (keys.IsKeyDown(Keys.Left))
             {
@@ -81,18 +84,34 @@ namespace Heretic
 
             angle %= Math.Tau;
         }
+        private bool CheckWall(Point position)
+        {
+            return map.WorldMap[position.Y, position.X] != 1;
+        }
+
+        private void CheckWallCollision(Vector2 position)
+        {
+            if (CheckWall(new Point((int)(this.position.X + position.X), (int)this.position.Y)))
+            {
+                this.position.X += position.X;
+            }
+            if (CheckWall(new Point((int)this.position.X, (int)(this.position.Y + position.Y))))
+            {
+                this.position.Y += position.Y;
+            }
+        }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             PrimitiveDrawer.DrawLine(
-                spriteBatch, 
-                position * 100, 
+                spriteBatch,
+                position * 100,
                 new Vector2((float)(position.X * 100 + Settings.WIDTH * Math.Cos(angle)),
-                    (float)(position.Y * 100 + Settings.HEIGHT * Math.Sin(angle))), 
-                Color.Yellow, 
+                    (float)(position.Y * 100 + Settings.HEIGHT * Math.Sin(angle))),
+                Color.Yellow,
                 2);
 
-            PrimitiveDrawer.DrawRectangle(spriteBatch, new Rectangle((int) (position.X * 100 - 7.5f), (int) (position.Y * 100 - 7.5f), 15, 15), Color.Green);
+            PrimitiveDrawer.DrawRectangle(spriteBatch, new Rectangle((int)(position.X * 100 - 7.5f), (int)(position.Y * 100 - 7.5f), 15, 15), Color.Green);
         }
     }
 }
