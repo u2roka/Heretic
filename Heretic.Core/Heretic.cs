@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Heretic.Core;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -8,6 +9,7 @@ namespace Heretic
     {
         private Map map;
         private Player player;
+        private RayCasting rayCasting;
 
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
@@ -31,6 +33,7 @@ namespace Heretic
             // TODO: Add your initialization logic here
             map = new Map();
             player = new Player(map);
+            rayCasting = new RayCasting(player, map);
 
             base.Initialize();
         }
@@ -39,7 +42,7 @@ namespace Heretic
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            // TODO: use this.Content to load your game content here            
         }
 
         protected override void Update(GameTime gameTime)
@@ -49,6 +52,7 @@ namespace Heretic
 
             // TODO: Add your update logic here
             player.Update(gameTime);
+            rayCasting.Update();
 
             base.Update(gameTime);
         }
@@ -62,6 +66,7 @@ namespace Heretic
 
             map.Draw(gameTime, spriteBatch);
             player.Draw(gameTime, spriteBatch);
+            rayCasting.Draw(gameTime, spriteBatch);
 
             spriteBatch.End();
 

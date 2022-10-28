@@ -26,7 +26,14 @@ namespace Heretic
             }
         }
 
-        private double angle;
+        private float angle;
+        public float Angle 
+        { 
+            get
+            {
+                return angle;
+            }
+        }
 
         private Map map;
 
@@ -40,13 +47,13 @@ namespace Heretic
 
         public void Update(GameTime gameTime)
         {
-            double deltaTime = gameTime.ElapsedGameTime.TotalSeconds;
+            float deltaTime = (float) gameTime.ElapsedGameTime.TotalSeconds;
 
-            double sinA = Math.Sin(angle);
-            double cosA = Math.Cos(angle);
-            double speed = Settings.PLAYER_SPEED * deltaTime;
-            float speedSin = (float)(speed * sinA);
-            float speedCos = (float)(speed * cosA);
+            float sinA = MathF.Sin(angle);
+            float cosA = MathF.Cos(angle);
+            float speed = Settings.PLAYER_SPEED * deltaTime;
+            float speedSin = speed * sinA;
+            float speedCos = speed * cosA;
             Vector2 delta = Vector2.Zero;
 
             var keys = Keyboard.GetState();
@@ -82,7 +89,7 @@ namespace Heretic
                 angle += Settings.PLAYER_ROT_SPEED * deltaTime;
             }
 
-            angle %= Math.Tau;
+            angle %= MathF.Tau;
         }
         private bool CheckWall(Point position)
         {
@@ -103,13 +110,12 @@ namespace Heretic
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            PrimitiveDrawer.DrawLine(
-                spriteBatch,
-                position * 100,
-                new Vector2((float)(position.X * 100 + Settings.WIDTH * Math.Cos(angle)),
-                    (float)(position.Y * 100 + Settings.HEIGHT * Math.Sin(angle))),
-                Color.Yellow,
-                2);
+            //PrimitiveDrawer.DrawLine(
+            //    spriteBatch,
+            //    position * 100,
+            //    new Vector2(position.X * 100 + Settings.WIDTH * MathF.Cos(angle), position.Y * 100 + Settings.HEIGHT * MathF.Sin(angle)),
+            //    Color.Yellow,
+            //    2);
 
             PrimitiveDrawer.DrawRectangle(spriteBatch, new Rectangle((int)(position.X * 100 - 7.5f), (int)(position.Y * 100 - 7.5f), 15, 15), Color.Green);
         }
