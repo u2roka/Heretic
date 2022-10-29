@@ -110,12 +110,12 @@ namespace Heretic
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            //PrimitiveDrawer.DrawLine(
-            //    spriteBatch,
-            //    position * 100,
-            //    new Vector2(position.X * 100 + Settings.WIDTH * MathF.Cos(angle), position.Y * 100 + Settings.HEIGHT * MathF.Sin(angle)),
-            //    Color.Yellow,
-            //    2);
+            PrimitiveDrawer.DrawLine(
+                spriteBatch,
+                position * 100,
+                new Vector2(position.X * 100 + Settings.WIDTH * MathF.Cos(angle), position.Y * 100 + Settings.HEIGHT * MathF.Sin(angle)),
+                Color.Yellow,
+                2);
 
             PrimitiveDrawer.DrawRectangle(spriteBatch, new Rectangle((int)(position.X * 100 - 7.5f), (int)(position.Y * 100 - 7.5f), 15, 15), Color.Green);
         }

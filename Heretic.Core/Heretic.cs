@@ -64,8 +64,8 @@ namespace Heretic
             // TODO: Add your drawing code here            
             spriteBatch.Begin();
 
-            map.Draw(gameTime, spriteBatch);
-            player.Draw(gameTime, spriteBatch);
+            //map.Draw(gameTime, spriteBatch);
+            //player.Draw(gameTime, spriteBatch);
             rayCasting.Draw(gameTime, spriteBatch);
 
             spriteBatch.End();

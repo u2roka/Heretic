@@ -9,8 +9,8 @@ namespace Heretic.Core
         private Player player;
         private Map map;
 
-        private Vector2[] rayStart = new Vector2[Settings.NUM_RAYS];
-        private Vector2[] rayEnd = new Vector2[Settings.NUM_RAYS];
+        private float[] depth = new float[Settings.NUM_RAYS];
+        private float[] projectHeight = new float[Settings.NUM_RAYS];        
 
         public RayCasting(Player player, Map map)
         {
@@ -77,10 +77,10 @@ namespace Heretic.Core
                     depthVertical += deltaDepth;
                 }
 
-                rayStart[ray] = o * 100;
+                depth[ray] = (depthVertical < depthHorizontal) ? depthVertical : depthHorizontal;
+                depth[ray] *= MathF.Cos(player.Angle - rayAngle);
 
-                float depth = (depthVertical < depthHorizontal) ? depthVertical : depthHorizontal;
-                rayEnd[ray] = new Vector2(o.X * 100 + depth * 100 * cosAngle, o.Y * 100 + depth * 100 * sinAngle);
+                projectHeight[ray] = Settings.SCREEN_DIST / (depth[ray] + 0.0001f);
 
                 rayAngle += Settings.DELTA_ANGLE;
             }
@@ -95,12 +95,12 @@ namespace Heretic.Core
         {
             for (int ray = 0; ray < Settings.NUM_RAYS; ray++)
             {
-                PrimitiveDrawer.DrawLine(
-                        spriteBatch,
-                        rayStart[ray],
-                        rayEnd[ray],
-                        Color.Yellow,
-                        2);
+                float channel = 1 / (1 + MathF.Pow(depth[ray], 5) * 0.00002f);
+                Color color = new(channel, channel, channel);
+                PrimitiveDrawer.DrawRectangle(
+                    spriteBatch, 
+                    new Rectangle(ray * Settings.SCALE, Settings.HALF_HEIGHT - (int) (projectHeight[ray] / 2), Settings.SCALE, (int) projectHeight[ray]),
+                    color);
             }
         }
     }
