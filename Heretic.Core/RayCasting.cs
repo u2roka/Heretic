@@ -24,22 +24,10 @@ namespace Heretic.Core
             {
                 RayCastingResult values = rayCastingResults[i];
 
-                Rectangle sourceRectangle = new Rectangle((int) (values.Offset * (Settings.TEXTURE_SIZE -  Settings.SCALE)), 0, Settings.SCALE, Settings.TEXTURE_SIZE);
-
-                Color[] wallColumnData = new Color[sourceRectangle.Width * sourceRectangle.Height];
-
-                Color[] wallData = objectRenderer.WallData[values.Texture];
-                for (int y = 0; y < sourceRectangle.Height; y++)
-                {
-                    for (int x = 0; x < sourceRectangle.Width; x++)
-                    {
-                        wallColumnData[x + y * sourceRectangle.Width] = wallData[(sourceRectangle.X + x) + y * Settings.TEXTURE_SIZE];
-                    }
-                }                
-
-                Rectangle wallSegment = new Rectangle(i * Settings.SCALE, Settings.HALF_HEIGHT - (int) values.ProjectHeight / 2, Settings.SCALE, (int) values.ProjectHeight);
-
-                objectRenderer.ObjectsToRender[i] = new ObjectToRender(values.Depth, wallColumnData, wallSegment);
+                objectRenderer.ObjectsToRender[i] = new ObjectToRender(values.Depth,
+                    values.Texture,
+                    new Rectangle((int)(values.Offset * (Settings.TEXTURE_SIZE - Settings.SCALE)), 0, Settings.SCALE, Settings.TEXTURE_SIZE),
+                    new Rectangle(i * Settings.SCALE, Settings.HALF_HEIGHT - (int)values.ProjectHeight / 2, Settings.SCALE, (int)values.ProjectHeight));
             }
         }
 
@@ -162,14 +150,16 @@ namespace Heretic.Core
         public struct ObjectToRender
         {
             public float Depth { get; set; }
-            public Color[] WallColumnData { get; set; }
-            public Rectangle WallSegment { get; set; }
+            public int Texture { get; set; }
+            public Rectangle WallColumnSource { get; set; }
+            public Rectangle WallColumnDestination { get; set; }
 
-            public ObjectToRender(float depth, Color[] wallColumnData, Rectangle wallSegment)
+            public ObjectToRender(float depth, int texture, Rectangle wallColumnSource, Rectangle WallColumnDestination)
             {
                 Depth = depth;
-                WallColumnData = wallColumnData;
-                WallSegment = wallSegment;
+                Texture = texture;
+                WallColumnSource = wallColumnSource;
+                this.WallColumnDestination = WallColumnDestination;
             }
         }
     }

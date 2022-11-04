@@ -10,18 +10,7 @@ namespace Heretic.Core
     {
         private ContentManager content;
 
-        private Texture2D[] wallColumns = new Texture2D[Settings.NUM_RAYS];
-
         private Dictionary<int, Texture2D> wallTextures;
-
-        private Dictionary<int, Color[]> wallData;
-        public Dictionary<int, Color[]> WallData 
-        { 
-            get
-            {
-                return wallData;
-            }
-        }
 
         private ObjectToRender[] objectsToRender = new ObjectToRender[Settings.NUM_RAYS];
         public ObjectToRender[] ObjectsToRender
@@ -41,12 +30,6 @@ namespace Heretic.Core
             this.content = content;
 
             wallTextures = new Dictionary<int, Texture2D>();
-            wallData = new Dictionary<int, Color[]>();
-
-            for (int i = 0; i < wallColumns.Length; i++)
-            {
-                wallColumns[i] = new Texture2D(graphicsDevice, Settings.SCALE, Settings.TEXTURE_SIZE);
-            }
         }
 
         private Texture2D GetTexture(string path)
@@ -65,33 +48,17 @@ namespace Heretic.Core
             wallTextures.Add(5, GetTexture("FLAT522"));
             wallTextures.Add(6, GetTexture("FLAT523"));
 
-            GenerateWallData();
-
             return wallTextures;
         }
-
-        private void GenerateWallData()
-        {
-            wallData.Clear();
-
-            for (int i = 0; i < wallTextures.Count; i++)
-            {
-                Color[] data = new Color[Settings.TEXTURE_SIZE * Settings.TEXTURE_SIZE];
-                wallTextures[i + 1].GetData(data);
-
-                wallData.Add(i + 1, data);
-            }
-        }
-
+        
         private void RenderGameObjects(SpriteBatch spriteBatch)
         {
             for (int i = 0; i < objectsToRender.Length; i++)
             {
-                wallColumns[i].SetData(objectsToRender[i].WallColumnData);
-                
                 spriteBatch.Draw(
-                    wallColumns[i],
-                    objectsToRender[i].WallSegment,
+                    wallTextures[objectsToRender[i].Texture],
+                    objectsToRender[i].WallColumnDestination,
+                    objectsToRender[i].WallColumnSource,
                     Color.White);
             }
         }
