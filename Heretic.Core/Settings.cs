@@ -16,6 +16,14 @@ namespace Heretic
         public static float PLAYER_ANGLE = 0f;
         public static float PLAYER_SPEED = 4f;
         public static float PLAYER_ROT_SPEED = 2f;
+        public static float PLAYER_SIZE_SCALE = 0.06f;
+
+        public static float MOUSE_SENSITIVITY = 0.3f;
+        public static int MOUSE_MAXIMUM_RELATIVE_MOVEMENT = 40;
+        public static int MOUSE_BORDER_LEFT = 100;
+        public static int MOUSE_BORDER_RIGHT = WIDTH - MOUSE_BORDER_LEFT;
+
+        public static Color FLOOR_COLOR = new Color(30, 30, 30);
 
         public static float FOV = MathF.PI / 3;
         public static float HALF_FOV = FOV / 2;

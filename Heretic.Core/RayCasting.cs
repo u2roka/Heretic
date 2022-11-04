@@ -24,10 +24,20 @@ namespace Heretic.Core
             {
                 RayCastingResult values = rayCastingResults[i];
 
+                int textureHeight = Settings.TEXTURE_SIZE * Settings.HEIGHT / (int) values.ProjectHeight;
+
+                Rectangle wallColumnSource = values.ProjectHeight < Settings.HEIGHT
+                    ? new Rectangle((int)(values.Offset * (Settings.TEXTURE_SIZE - Settings.SCALE)), 0, Settings.SCALE, Settings.TEXTURE_SIZE)
+                    : new Rectangle((int)(values.Offset * (Settings.TEXTURE_SIZE - Settings.SCALE)), Settings.HALF_TEXTURE_SIZE - textureHeight / 2, Settings.SCALE, textureHeight);
+                Rectangle wallColumnDestination = values.ProjectHeight < Settings.HEIGHT
+                    ? new Rectangle(i * Settings.SCALE, Settings.HALF_HEIGHT - (int)values.ProjectHeight / 2, Settings.SCALE, (int)values.ProjectHeight)
+                    : new Rectangle(i * Settings.SCALE, 0, Settings.SCALE, Settings.HEIGHT);
+
                 objectRenderer.ObjectsToRender[i] = new ObjectToRender(values.Depth,
                     values.Texture,
-                    new Rectangle((int)(values.Offset * (Settings.TEXTURE_SIZE - Settings.SCALE)), 0, Settings.SCALE, Settings.TEXTURE_SIZE),
-                    new Rectangle(i * Settings.SCALE, Settings.HALF_HEIGHT - (int)values.ProjectHeight / 2, Settings.SCALE, (int)values.ProjectHeight));
+                    wallColumnSource,
+                    wallColumnDestination
+                );
             }
         }
 
@@ -154,12 +164,12 @@ namespace Heretic.Core
             public Rectangle WallColumnSource { get; set; }
             public Rectangle WallColumnDestination { get; set; }
 
-            public ObjectToRender(float depth, int texture, Rectangle wallColumnSource, Rectangle WallColumnDestination)
+            public ObjectToRender(float depth, int texture, Rectangle wallColumnSource, Rectangle wallColumnDestination)
             {
                 Depth = depth;
                 Texture = texture;
                 WallColumnSource = wallColumnSource;
-                this.WallColumnDestination = WallColumnDestination;
+                this.WallColumnDestination = wallColumnDestination;
             }
         }
     }

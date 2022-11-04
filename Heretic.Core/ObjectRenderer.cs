@@ -9,8 +9,11 @@ namespace Heretic.Core
     internal class ObjectRenderer
     {
         private ContentManager content;
+        private Player player;
 
         private Dictionary<int, Texture2D> wallTextures;
+        private Texture2D skyImage;
+        private int skyOffset;
 
         private ObjectToRender[] objectsToRender = new ObjectToRender[Settings.NUM_RAYS];
         public ObjectToRender[] ObjectsToRender
@@ -25,11 +28,13 @@ namespace Heretic.Core
             }
         }
 
-        public ObjectRenderer(GraphicsDevice graphicsDevice, ContentManager content)
+        public ObjectRenderer(ContentManager content, Player player)
         {
             this.content = content;
+            this.player = player;
 
             wallTextures = new Dictionary<int, Texture2D>();
+            skyImage = GetTexture("SKY1");            
         }
 
         private Texture2D GetTexture(string path)
@@ -50,7 +55,7 @@ namespace Heretic.Core
 
             return wallTextures;
         }
-        
+
         private void RenderGameObjects(SpriteBatch spriteBatch)
         {
             for (int i = 0; i < objectsToRender.Length; i++)
@@ -63,8 +68,19 @@ namespace Heretic.Core
             }
         }
 
+        private void DrawBackground(SpriteBatch spriteBatch)
+        {
+            skyOffset = (int) (skyOffset + 4.5f * player.RelativeMovement) % Settings.WIDTH;
+            spriteBatch.Draw(skyImage, new Rectangle(-skyOffset - Settings.WIDTH, 0, Settings.WIDTH, Settings.HALF_HEIGHT), Color.White);
+            spriteBatch.Draw(skyImage, new Rectangle(-skyOffset, 0, Settings.WIDTH, Settings.HALF_HEIGHT), Color.White);
+            spriteBatch.Draw(skyImage, new Rectangle(-skyOffset + Settings.WIDTH, 0, Settings.WIDTH, Settings.HALF_HEIGHT), Color.White);
+
+            PrimitiveDrawer.DrawRectangle(spriteBatch, new Rectangle(0, Settings.HALF_HEIGHT, Settings.WIDTH, Settings.HEIGHT), Settings.FLOOR_COLOR);
+        }
+
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
+            DrawBackground(spriteBatch);
             RenderGameObjects(spriteBatch);
         }
     }

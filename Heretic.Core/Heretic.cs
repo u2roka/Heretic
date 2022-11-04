@@ -26,7 +26,7 @@ namespace Heretic
             graphics.ApplyChanges();
 
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;
+            IsMouseVisible = false;
         }
 
         protected override void Initialize()
@@ -34,7 +34,7 @@ namespace Heretic
             // TODO: Add your initialization logic here
             map = new Map();
             player = new Player(map);
-            objectRenderer = new ObjectRenderer(GraphicsDevice, Content);
+            objectRenderer = new ObjectRenderer(Content, player);
             rayCasting = new RayCasting(player, map, objectRenderer);
 
             base.Initialize();
@@ -62,13 +62,15 @@ namespace Heretic
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
+            //GraphicsDevice.Clear(Color.Black);
 
             // TODO: Add your drawing code here            
             spriteBatch.Begin();
 
             objectRenderer.Draw(gameTime, spriteBatch);
-            
+            //map.Draw(gameTime, spriteBatch);
+            //player.Draw(gameTime, spriteBatch);
+
             spriteBatch.End();
 
             base.Draw(gameTime);

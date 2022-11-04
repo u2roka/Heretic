@@ -22,7 +22,8 @@ namespace Heretic
             for (int y = 0; y < WorldMap.GetLength(0); y++)
                 for (int x = 0; x < WorldMap.GetLength(1); x++)
                 {
-                    PrimitiveDrawer.DrawRectangle(spriteBatch, new Rectangle(x * WorldMap[y, x] * 100, y * WorldMap[y, x] * 100, 100, 100), Color.LightSlateGray);
+                    int wall = WorldMap[y, x] != 0 ? 1 : 0;
+                    PrimitiveDrawer.DrawRectangle(spriteBatch, new Rectangle(x * wall * 100, y * wall * 100, 100, 100), Color.LightSlateGray);
                 }
         }
     }

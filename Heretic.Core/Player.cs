@@ -26,6 +26,15 @@ namespace Heretic
             }
         }
 
+        private int relativeMovement;
+        public int RelativeMovement 
+        { 
+            get
+            {
+                return relativeMovement;
+            }
+        }
+
         private float angle;
         public float Angle 
         { 
@@ -45,10 +54,8 @@ namespace Heretic
             this.map = map;
         }
 
-        public void Update(GameTime gameTime)
+        private void Movement(float deltaTime)
         {
-            float deltaTime = (float) gameTime.ElapsedGameTime.TotalSeconds;
-
             float sinA = MathF.Sin(angle);
             float cosA = MathF.Cos(angle);
             float speed = Settings.PLAYER_SPEED * deltaTime;
@@ -78,31 +85,59 @@ namespace Heretic
                 delta.Y += speedCos;
             }
 
-            CheckWallCollision(delta);
+            CheckWallCollision(deltaTime, delta);
 
-            if (keys.IsKeyDown(Keys.Left))
-            {
-                angle -= Settings.PLAYER_ROT_SPEED * deltaTime;
-            }
-            if (keys.IsKeyDown(Keys.Right))
-            {
-                angle += Settings.PLAYER_ROT_SPEED * deltaTime;
-            }
+            //if (keys.IsKeyDown(Keys.Left))
+            //{
+            //    angle -= Settings.PLAYER_ROT_SPEED * deltaTime;
+            //}
+            //if (keys.IsKeyDown(Keys.Right))
+            //{
+            //    angle += Settings.PLAYER_ROT_SPEED * deltaTime;
+            //}
 
             angle %= MathF.Tau;
         }
+
+        private void MouseControl(float deltaTime)
+        {
+            MouseState mouseState = Mouse.GetState();
+            Point mouse = mouseState.Position;
+            if (mouse.X < Settings.MOUSE_BORDER_LEFT || mouse.X > Settings.MOUSE_BORDER_RIGHT)
+            {
+                Mouse.SetPosition(Settings.HALF_WIDTH, Settings.HALF_HEIGHT);
+            }
+            
+            relativeMovement = (Settings.HALF_WIDTH - mouse.X) * -1;
+            relativeMovement = Math.Max(-Settings.MOUSE_MAXIMUM_RELATIVE_MOVEMENT, Math.Min(Settings.MOUSE_MAXIMUM_RELATIVE_MOVEMENT, relativeMovement));
+            angle += relativeMovement * Settings.MOUSE_SENSITIVITY * deltaTime;
+            Mouse.SetPosition(Settings.HALF_WIDTH, Settings.HALF_HEIGHT);
+        }
+
+        public void Update(GameTime gameTime)
+        {
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            Movement(deltaTime);
+            MouseControl(deltaTime);
+        }
+
         private bool CheckWall(Point position)
         {
             return map.WorldMap[position.Y, position.X] == 0;
         }
 
-        private void CheckWallCollision(Vector2 position)
+        private void CheckWallCollision(float deltaTime, Vector2 position)
         {
-            if (CheckWall(new Point((int)(this.position.X + position.X), (int)this.position.Y)))
+            if (deltaTime == 0) return;
+
+            float scale = Settings.PLAYER_SIZE_SCALE / deltaTime;
+
+            if (CheckWall(new Point((int)(this.position.X + position.X * scale), (int)this.position.Y)))
             {
                 this.position.X += position.X;
             }
-            if (CheckWall(new Point((int)this.position.X, (int)(this.position.Y + position.Y))))
+            if (CheckWall(new Point((int)this.position.X, (int)(this.position.Y + position.Y * scale))))
             {
                 this.position.Y += position.Y;
             }
