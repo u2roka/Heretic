@@ -93,7 +93,7 @@ namespace Heretic
         }
         private bool CheckWall(Point position)
         {
-            return map.WorldMap[position.Y, position.X] != 1;
+            return map.WorldMap[position.Y, position.X] == 0;
         }
 
         private void CheckWallCollision(Vector2 position)

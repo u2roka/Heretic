@@ -26,5 +26,8 @@ namespace Heretic
 
         public static float SCREEN_DIST = HALF_WIDTH / MathF.Tan(HALF_FOV);
         public static int SCALE = WIDTH / NUM_RAYS;
+
+        public static int TEXTURE_SIZE = 296;
+        public static int HALF_TEXTURE_SIZE = TEXTURE_SIZE / 2;
     }
 }

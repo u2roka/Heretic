@@ -1,5 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 
 namespace Heretic.Core
@@ -8,20 +7,54 @@ namespace Heretic.Core
     {
         private Player player;
         private Map map;
+        private ObjectRenderer objectRenderer;
 
-        private float[] depth = new float[Settings.NUM_RAYS];
-        private float[] projectHeight = new float[Settings.NUM_RAYS];        
+        private RayCastingResult[] rayCastingResults = new RayCastingResult[Settings.NUM_RAYS];
 
-        public RayCasting(Player player, Map map)
+        public RayCasting(Player player, Map map, ObjectRenderer objectRenderer)
         {
             this.player = player;
             this.map = map;
+            this.objectRenderer = objectRenderer;            
+        }
+
+        private void GetObjectsToRender()
+        {
+            for (int i = 0; i < rayCastingResults.Length; i++)
+            {
+                RayCastingResult values = rayCastingResults[i];
+
+                Rectangle sourceRectangle = new Rectangle((int) (values.Offset * (Settings.TEXTURE_SIZE -  Settings.SCALE)), 0, Settings.SCALE, Settings.TEXTURE_SIZE);
+
+                Color[] wallColumnData = new Color[sourceRectangle.Width * sourceRectangle.Height];
+
+                Color[] wallData = objectRenderer.WallData[values.Texture];
+                for (int y = 0; y < sourceRectangle.Height; y++)
+                {
+                    for (int x = 0; x < sourceRectangle.Width; x++)
+                    {
+                        wallColumnData[x + y * sourceRectangle.Width] = wallData[(sourceRectangle.X + x) + y * Settings.TEXTURE_SIZE];
+                    }
+                }                
+
+                Rectangle wallSegment = new Rectangle(i * Settings.SCALE, Settings.HALF_HEIGHT - (int) values.ProjectHeight / 2, Settings.SCALE, (int) values.ProjectHeight);
+
+                objectRenderer.ObjectsToRender[i] = new ObjectToRender(values.Depth, wallColumnData, wallSegment);
+            }
         }
 
         private void RayCast()
         {
             Vector2 o = player.Position;
             Point mapPosition = player.MapPosition;
+
+            int textureVertical = 1;
+            int textureHorizontal = 1;
+
+            float depth;
+            float projectHeight;
+            int texture;
+            float offset;            
 
             Vector2 delta = new();
             Vector2 horizontal = new();
@@ -47,8 +80,9 @@ namespace Heretic.Core
                 {
                     horizontal.X = Math.Clamp(horizontal.X, 0, map.WorldMap.GetLength(1) - 1);
                     horizontal.Y = Math.Clamp(horizontal.Y, 0, map.WorldMap.GetLength(0) - 1);
-                    if (map.WorldMap[(int)horizontal.Y, (int)horizontal.X] == 1)
+                    if (map.WorldMap[(int)horizontal.Y, (int)horizontal.X] != 0)
                     {
+                        textureHorizontal = map.WorldMap[(int)horizontal.Y, (int)horizontal.X];
                         break;
                     }
                     horizontal += delta;
@@ -69,18 +103,35 @@ namespace Heretic.Core
                 {
                     vertical.X = Math.Clamp(vertical.X, 0, map.WorldMap.GetLength(1) - 1);
                     vertical.Y = Math.Clamp(vertical.Y, 0, map.WorldMap.GetLength(0) - 1);
-                    if (map.WorldMap[(int)vertical.Y, (int)vertical.X] == 1)
+                    if (map.WorldMap[(int)vertical.Y, (int)vertical.X] != 0)
                     {
+                        textureVertical = map.WorldMap[(int)vertical.Y, (int)vertical.X];
                         break;
                     }
                     vertical += delta;
                     depthVertical += deltaDepth;
                 }
 
-                depth[ray] = (depthVertical < depthHorizontal) ? depthVertical : depthHorizontal;
-                depth[ray] *= MathF.Cos(player.Angle - rayAngle);
+                if (depthVertical < depthHorizontal)
+                {
+                    depth = depthVertical;
+                    texture = textureVertical;
+                    vertical.Y %= 1;
+                    offset = cosAngle > 0 ? vertical.Y : 1 - vertical.Y;
+                }
+                else
+                {
+                    depth = depthHorizontal;
+                    texture = textureHorizontal;
+                    horizontal.X %= 1;
+                    offset = sinAngle > 0 ? 1 - horizontal.X: horizontal.X;
+                }
+                    
+                depth *= MathF.Cos(player.Angle - rayAngle);
 
-                projectHeight[ray] = Settings.SCREEN_DIST / (depth[ray] + 0.0001f);
+                projectHeight = Settings.SCREEN_DIST / (depth + 0.0001f);
+
+                rayCastingResults[ray] = new RayCastingResult(depth, projectHeight, texture, offset);
 
                 rayAngle += Settings.DELTA_ANGLE;
             }
@@ -89,18 +140,36 @@ namespace Heretic.Core
         public void Update()
         {
             RayCast();
+            GetObjectsToRender();
+        }        
+
+        public struct RayCastingResult
+        {
+            public float Depth { get; set; }
+            public float ProjectHeight { get; set; }
+            public int Texture { get; set; }
+            public float Offset { get; set; }
+
+            public RayCastingResult(float depth, float projectHeight, int texture, float offset)
+            {
+                Depth = depth;
+                ProjectHeight = projectHeight;
+                Texture = texture;
+                Offset = offset;
+            }
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        public struct ObjectToRender
         {
-            for (int ray = 0; ray < Settings.NUM_RAYS; ray++)
+            public float Depth { get; set; }
+            public Color[] WallColumnData { get; set; }
+            public Rectangle WallSegment { get; set; }
+
+            public ObjectToRender(float depth, Color[] wallColumnData, Rectangle wallSegment)
             {
-                float channel = 1 / (1 + MathF.Pow(depth[ray], 5) * 0.00002f);
-                Color color = new(channel, channel, channel);
-                PrimitiveDrawer.DrawRectangle(
-                    spriteBatch, 
-                    new Rectangle(ray * Settings.SCALE, Settings.HALF_HEIGHT - (int) (projectHeight[ray] / 2), Settings.SCALE, (int) projectHeight[ray]),
-                    color);
+                Depth = depth;
+                WallColumnData = wallColumnData;
+                WallSegment = wallSegment;
             }
         }
     }

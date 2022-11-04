@@ -10,6 +10,7 @@ namespace Heretic
         private Map map;
         private Player player;
         private RayCasting rayCasting;
+        private ObjectRenderer objectRenderer;  
 
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
@@ -33,7 +34,8 @@ namespace Heretic
             // TODO: Add your initialization logic here
             map = new Map();
             player = new Player(map);
-            rayCasting = new RayCasting(player, map);
+            objectRenderer = new ObjectRenderer(GraphicsDevice, Content);
+            rayCasting = new RayCasting(player, map, objectRenderer);
 
             base.Initialize();
         }
@@ -42,7 +44,8 @@ namespace Heretic
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here            
+            // TODO: use this.Content to load your game content here
+            objectRenderer.LoadWallTextures();
         }
 
         protected override void Update(GameTime gameTime)
@@ -64,10 +67,8 @@ namespace Heretic
             // TODO: Add your drawing code here            
             spriteBatch.Begin();
 
-            //map.Draw(gameTime, spriteBatch);
-            //player.Draw(gameTime, spriteBatch);
-            rayCasting.Draw(gameTime, spriteBatch);
-
+            objectRenderer.Draw(gameTime, spriteBatch);
+            
             spriteBatch.End();
 
             base.Draw(gameTime);
