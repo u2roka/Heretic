@@ -10,10 +10,11 @@ namespace Heretic
         private Map map;
         private Player player;
         private RayCasting rayCasting;
-        private ObjectRenderer objectRenderer;  
+        private ObjectRenderer objectRenderer;
+        private ObjectHandler objectHandler;
 
         private GraphicsDeviceManager graphics;
-        private SpriteBatch spriteBatch;
+        private SpriteBatch spriteBatch;        
 
         public Heretic()
         {
@@ -36,7 +37,8 @@ namespace Heretic
             player = new Player(map);
             objectRenderer = new ObjectRenderer(Content, player);
             rayCasting = new RayCasting(player, map, objectRenderer);
-
+            objectHandler = new ObjectHandler(Content, player, objectRenderer);            
+            
             base.Initialize();
         }
 
@@ -56,6 +58,7 @@ namespace Heretic
             // TODO: Add your update logic here
             player.Update(gameTime);
             rayCasting.Update();
+            objectHandler.Update(gameTime);
 
             base.Update(gameTime);
         }

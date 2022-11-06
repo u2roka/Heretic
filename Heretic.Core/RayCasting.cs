@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 
 namespace Heretic.Core
@@ -20,6 +21,8 @@ namespace Heretic.Core
 
         private void GetObjectsToRender()
         {
+            objectRenderer.ObjectsToRender.Clear();
+
             for (int i = 0; i < rayCastingResults.Length; i++)
             {
                 RayCastingResult values = rayCastingResults[i];
@@ -33,10 +36,10 @@ namespace Heretic.Core
                     ? new Rectangle(i * Settings.SCALE, Settings.HALF_HEIGHT - (int)values.ProjectHeight / 2, Settings.SCALE, (int)values.ProjectHeight)
                     : new Rectangle(i * Settings.SCALE, 0, Settings.SCALE, Settings.HEIGHT);
 
-                objectRenderer.ObjectsToRender[i] = new ObjectToRender(values.Depth,
+                objectRenderer.ObjectsToRender.Add(new ObjectToRender(values.Depth,
                     values.Texture,
                     wallColumnSource,
-                    wallColumnDestination
+                    wallColumnDestination)
                 );
             }
         }
@@ -160,16 +163,27 @@ namespace Heretic.Core
         public struct ObjectToRender
         {
             public float Depth { get; set; }
-            public int Texture { get; set; }
-            public Rectangle WallColumnSource { get; set; }
+            public int TextureIndex { get; set; }
+            public Texture2D Texture { get; set; }
+            public Rectangle? WallColumnSource { get; set; }
             public Rectangle WallColumnDestination { get; set; }
 
-            public ObjectToRender(float depth, int texture, Rectangle wallColumnSource, Rectangle wallColumnDestination)
+            public ObjectToRender(float depth, int textureIndex, Rectangle? wallColumnSource, Rectangle wallColumnDestination)
             {
                 Depth = depth;
-                Texture = texture;
+                TextureIndex = textureIndex;
+                Texture = null;
                 WallColumnSource = wallColumnSource;
-                this.WallColumnDestination = wallColumnDestination;
+                WallColumnDestination = wallColumnDestination;
+            }
+
+            public ObjectToRender(float depth, Texture2D texture, Rectangle wallColumnDestination)
+            {
+                Depth = depth;
+                TextureIndex = -1;
+                Texture = texture;
+                WallColumnSource = null;
+                WallColumnDestination = wallColumnDestination;
             }
         }
     }

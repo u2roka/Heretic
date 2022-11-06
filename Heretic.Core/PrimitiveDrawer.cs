@@ -7,6 +7,7 @@ namespace Heretic
     internal static class PrimitiveDrawer
     {
         private static Texture2D texture;
+
         private static Texture2D GetTexture(SpriteBatch spriteBatch)
         {
             if (texture == null)
