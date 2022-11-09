@@ -1,6 +1,8 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Heretic.Core;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System;
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
@@ -44,14 +46,42 @@ namespace Heretic
             }
         }
 
-        private Map map;
+        private bool shot;
+        public bool Shot
+        {
+            get 
+            { 
+                return shot; 
+            }
+            set 
+            { 
+                shot = value; 
+            }
+        }
 
-        public Player(Map map)
+        private bool reloading;
+        public bool Reloading
+        {
+            get
+            {
+                return reloading;
+            }
+            set
+            {
+                reloading = value;
+            }
+        }
+
+        private Map map;
+        private Sound sound;
+
+        public Player(Map map, Sound sound)
         {
             position = Settings.PLAYER_POS;
             angle = Settings.PLAYER_ANGLE;
 
             this.map = map;
+            this.sound = sound;
         }
 
         private void Movement(float deltaTime)
@@ -112,6 +142,13 @@ namespace Heretic
             relativeMovement = Math.Max(-Settings.MOUSE_MAXIMUM_RELATIVE_MOVEMENT, Math.Min(Settings.MOUSE_MAXIMUM_RELATIVE_MOVEMENT, relativeMovement));
             angle += relativeMovement * Settings.MOUSE_SENSITIVITY * deltaTime;
             Mouse.SetPosition(Settings.HALF_WIDTH, Settings.HALF_HEIGHT);
+
+            if (mouseState.LeftButton == ButtonState.Pressed && !Shot && !Reloading)
+            {
+                sound.ElvenWand.Play();
+                Shot = true;
+                Reloading = true;
+            }                
         }
 
         public void Update(GameTime gameTime)

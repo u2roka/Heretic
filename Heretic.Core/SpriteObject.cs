@@ -8,10 +8,10 @@ namespace Heretic.Core
     internal class SpriteObject
     {
         protected ContentManager content;
-        private Player player;
+        protected Player player;
         private ObjectRenderer objectRenderer;
-        private Vector2 position;
-        private float spriteScale;
+        protected Vector2 position;
+        protected float spriteScale;
         private float spriteHeightShift;
         protected bool hasAutoScaleAndShift;
         

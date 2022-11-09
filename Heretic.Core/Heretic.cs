@@ -12,6 +12,8 @@ namespace Heretic
         private RayCasting rayCasting;
         private ObjectRenderer objectRenderer;
         private ObjectHandler objectHandler;
+        private Weapon weapon;
+        private Sound sound;
 
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;        
@@ -34,11 +36,13 @@ namespace Heretic
         {
             // TODO: Add your initialization logic here
             map = new Map();
-            player = new Player(map);
+            sound = new Sound(Content, "GLDHIT");
+            player = new Player(map, sound);
             objectRenderer = new ObjectRenderer(Content, player);
             rayCasting = new RayCasting(player, map, objectRenderer);
-            objectHandler = new ObjectHandler(Content, player, objectRenderer);            
-            
+            objectHandler = new ObjectHandler(Content, player, objectRenderer);
+            weapon = new Weapon(Content, player, @"Weapons\Elvenwand\GWNDA0", 1f, 0.09f);
+                        
             base.Initialize();
         }
 
@@ -59,6 +63,7 @@ namespace Heretic
             player.Update(gameTime);
             rayCasting.Update();
             objectHandler.Update(gameTime);
+            weapon.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -71,6 +76,7 @@ namespace Heretic
             spriteBatch.Begin();
 
             objectRenderer.Draw(gameTime, spriteBatch);
+            weapon.Draw(gameTime, spriteBatch);
             //map.Draw(gameTime, spriteBatch);
             //player.Draw(gameTime, spriteBatch);
 

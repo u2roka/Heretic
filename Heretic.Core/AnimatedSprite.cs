@@ -9,9 +9,9 @@ namespace Heretic.Core
     internal class AnimatedSprite : SpriteObject
     {
         private float animationTime;
-        private LinkedList<Texture2D> images;
+        protected LinkedList<Texture2D> images;
         private float animationTimePrev;
-        private bool animationTrigger;
+        protected bool animationTrigger;
 
         public AnimatedSprite(ContentManager content, Player player, ObjectRenderer objectRenderer, string path, Vector2 position, float animationTime) : base(content, player, objectRenderer, path, position)
         {
@@ -56,7 +56,7 @@ namespace Heretic.Core
             }
         }
 
-        private void CheckAnimationTime(GameTime gameTime)
+        protected void CheckAnimationTime(GameTime gameTime)
         {
             animationTrigger = false;
             float timeNow = (float) gameTime.TotalGameTime.TotalSeconds;
