@@ -8,7 +8,7 @@ namespace Heretic.Core
 {
     internal class AnimatedSprite : SpriteObject
     {
-        private float animationTime;
+        protected float animationTime;
         protected LinkedList<Texture2D> images;
         private float animationTimePrev;
         protected bool animationTrigger;
@@ -39,10 +39,10 @@ namespace Heretic.Core
             base.Update(gameTime);
             
             CheckAnimationTime(gameTime);
-            Animate();
+            Animate(images);
         }
 
-        private void Animate()
+        public void Animate(LinkedList<Texture2D> images)
         {
             if (animationTrigger)
             {
@@ -67,7 +67,7 @@ namespace Heretic.Core
             }
         }
 
-        private LinkedList<Texture2D> GetImages(string path)
+        protected LinkedList<Texture2D> GetImages(string path)
         {
             LinkedList<Texture2D> result = new LinkedList<Texture2D>();
 

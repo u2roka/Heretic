@@ -14,6 +14,7 @@ namespace Heretic
         private ObjectHandler objectHandler;
         private Weapon weapon;
         private Sound sound;
+        private PathFinding pathFinding;
 
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;        
@@ -36,13 +37,14 @@ namespace Heretic
         {
             // TODO: Add your initialization logic here
             map = new Map();
-            sound = new Sound(Content, "GLDHIT");
+            sound = new Sound(Content);
             player = new Player(map, sound);
             objectRenderer = new ObjectRenderer(Content, player);
             rayCasting = new RayCasting(player, map, objectRenderer);
-            objectHandler = new ObjectHandler(Content, player, objectRenderer);
-            weapon = new Weapon(Content, player, @"Weapons\Elvenwand\GWNDA0", 1f, 0.09f);
-                        
+            pathFinding = new PathFinding(map);
+            objectHandler = new ObjectHandler(Content, sound, player, map, pathFinding, objectRenderer);
+            weapon = new Weapon(Content, player, @"Weapons\Elvenwand\GWNDA0", 1f, 0.09f);            
+
             base.Initialize();
         }
 
@@ -52,6 +54,7 @@ namespace Heretic
 
             // TODO: use this.Content to load your game content here
             objectRenderer.LoadWallTextures();
+            objectRenderer.RegisterPlayerDamageEvent();
         }
 
         protected override void Update(GameTime gameTime)
@@ -63,7 +66,8 @@ namespace Heretic
             player.Update(gameTime);
             rayCasting.Update();
             objectHandler.Update(gameTime);
-            weapon.Update(gameTime);
+            pathFinding.Update(objectHandler.NPCPositions);
+            weapon.Update(gameTime);            
 
             base.Update(gameTime);
         }
@@ -78,6 +82,7 @@ namespace Heretic
             objectRenderer.Draw(gameTime, spriteBatch);
             weapon.Draw(gameTime, spriteBatch);
             //map.Draw(gameTime, spriteBatch);
+            //objectHandler.Draw(gameTime, spriteBatch);
             //player.Draw(gameTime, spriteBatch);
 
             spriteBatch.End();

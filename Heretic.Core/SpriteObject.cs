@@ -13,13 +13,16 @@ namespace Heretic.Core
         protected Vector2 position;
         protected float spriteScale;
         private float spriteHeightShift;
+        protected float spriteHalfWidth;
         protected bool hasAutoScaleAndShift;
         
         protected Texture2D image;
         private float imageHalfWidth;
         private float imageRatio;
 
-        private float screenX;
+        protected float theta;
+        protected float screenX;
+        protected float distance;
         private float normalizedDistance;
 
         public SpriteObject(ContentManager content, Player player, ObjectRenderer objectRenderer, string path, Vector2 position)
@@ -69,7 +72,7 @@ namespace Heretic.Core
             float projectionWidth = projection * imageRatio;
             float projectionHeight = projection;
 
-            float spriteHalfWidth = projectionWidth / 2;
+            spriteHalfWidth = projectionWidth / 2;
             int heightShift = (int) (projectionHeight * spriteHeightShift);
             Point position = new Point((int) (screenX - spriteHalfWidth), Settings.HALF_HEIGHT - (int) (projectionHeight / 2) + heightShift);
             Rectangle spriteColumnDestionation = new Rectangle(position.X, position.Y, (int) projectionWidth, (int) projectionHeight);
@@ -82,7 +85,7 @@ namespace Heretic.Core
         public void GetSprite()
         {
             Vector2 deltaPosition = new Vector2(position.X - player.Position.X, position.Y - player.Position.Y);
-            float theta = MathF.Atan2(deltaPosition.Y, deltaPosition.X);
+            theta = MathF.Atan2(deltaPosition.Y, deltaPosition.X);
 
             float delta = theta - player.Angle;
             if ((deltaPosition.X > 0 && player.Angle > MathF.PI) || (deltaPosition.X < 0 && deltaPosition.Y < 0))
@@ -94,7 +97,7 @@ namespace Heretic.Core
             float deltaRays = delta / Settings.DELTA_ANGLE;
             screenX = (Settings.HALF_NUM_RAYS + deltaRays) * Settings.SCALE;
 
-            float distance = Hypot(deltaPosition.X, deltaPosition.Y);
+            distance = Hypot(deltaPosition.X, deltaPosition.Y);
             normalizedDistance = distance * MathF.Cos(delta);
 
             if (-imageHalfWidth < screenX && screenX < (Settings.WIDTH + imageHalfWidth) && normalizedDistance > 0.5f)

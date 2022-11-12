@@ -13,8 +13,12 @@ namespace Heretic.Core
         private Player player;
 
         private Dictionary<int, Texture2D> wallTextures;
+        
         private Texture2D skyImage;
         private int skyOffset;
+
+        private Texture2D bloodScreen;
+        private bool drawPlayerDamageSplatter;
 
         private List<ObjectToRender> objectsToRender = new List<ObjectToRender> ();
         public List<ObjectToRender> ObjectsToRender
@@ -36,6 +40,7 @@ namespace Heretic.Core
 
             wallTextures = new Dictionary<int, Texture2D>();
             skyImage = GetTexture(@"Textures\SKY1");
+            bloodScreen = GetTexture(@"Textures\SPLATTER1");
         }
 
         private Texture2D GetTexture(string path)
@@ -57,6 +62,11 @@ namespace Heretic.Core
             return wallTextures;
         }
 
+        public void RegisterPlayerDamageEvent()
+        {
+            player.OnDamage += PlayerDamageEventFired;
+        }
+
         private void RenderGameObjects(SpriteBatch spriteBatch)
         {
             objectsToRender.Sort((x, y) => x.Depth.CompareTo(y.Depth));
@@ -74,6 +84,16 @@ namespace Heretic.Core
             }
         }
 
+        private void PlayerDamageEventFired()
+        {
+            drawPlayerDamageSplatter = true;
+        }
+
+        private void PlayerDamage(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(bloodScreen, new Rectangle(0, 0, Settings.WIDTH, Settings.HEIGHT), Color.Red * 0.2f);
+        }
+
         private void DrawBackground(SpriteBatch spriteBatch)
         {
             skyOffset = (int) (skyOffset + 4.5f * player.RelativeMovement) % Settings.WIDTH;
@@ -88,6 +108,11 @@ namespace Heretic.Core
         {
             DrawBackground(spriteBatch);
             RenderGameObjects(spriteBatch);
+            if (drawPlayerDamageSplatter)
+            {
+                PlayerDamage(spriteBatch);
+                drawPlayerDamageSplatter = false;
+            }
         }
     }
 }

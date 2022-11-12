@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
 using System;
 using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
@@ -11,6 +10,9 @@ namespace Heretic
 {
     internal class Player
     {
+        public delegate void DamageEventHandler();
+        public event DamageEventHandler OnDamage;
+
         private Vector2 position;
         public Vector2 Position
         {
@@ -72,16 +74,40 @@ namespace Heretic
             }
         }
 
+        private int attackDamage;
+        public int AttackDamage
+        {
+            get
+            {
+                return attackDamage;
+            }
+            set
+            {
+                attackDamage = value;
+            }
+        }
+
         private Map map;
         private Sound sound;
 
+        private int health;
+
         public Player(Map map, Sound sound)
         {
-            position = Settings.PLAYER_POS;
-            angle = Settings.PLAYER_ANGLE;
-
             this.map = map;
             this.sound = sound;
+
+            position = Settings.PLAYER_POS;
+            angle = Settings.PLAYER_ANGLE;
+            health = Settings.PLAYER_MAX_HEALTH;            
+        }
+
+        public void GetDamage(int attackDamage)
+        {
+            health -= attackDamage;
+            sound.PlayerPain.Play();
+
+            OnDamage();
         }
 
         private void Movement(float deltaTime)
@@ -117,14 +143,14 @@ namespace Heretic
 
             CheckWallCollision(deltaTime, delta);
 
-            //if (keys.IsKeyDown(Keys.Left))
-            //{
-            //    angle -= Settings.PLAYER_ROT_SPEED * deltaTime;
-            //}
-            //if (keys.IsKeyDown(Keys.Right))
-            //{
-            //    angle += Settings.PLAYER_ROT_SPEED * deltaTime;
-            //}
+            if (keys.IsKeyDown(Keys.Left))
+            {
+                angle -= Settings.PLAYER_ROT_SPEED * deltaTime;
+            }
+            if (keys.IsKeyDown(Keys.Right))
+            {
+                angle += Settings.PLAYER_ROT_SPEED * deltaTime;
+            }
 
             angle %= MathF.Tau;
         }

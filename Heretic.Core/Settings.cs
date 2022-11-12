@@ -17,6 +17,7 @@ namespace Heretic
         public static float PLAYER_SPEED = 4f;
         public static float PLAYER_ROT_SPEED = 2f;
         public static float PLAYER_SIZE_SCALE = 0.06f;
+        public static int PLAYER_MAX_HEALTH = 100;
 
         public static float MOUSE_SENSITIVITY = 0.3f;
         public static int MOUSE_MAXIMUM_RELATIVE_MOVEMENT = 40;

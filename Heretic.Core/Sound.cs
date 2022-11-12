@@ -18,9 +18,49 @@ namespace Heretic.Core
             }
         }
 
-        public Sound(ContentManager content, string path)
+        private SoundEffect npcPain;
+        public SoundEffect NPCPain 
+        { 
+            get
+            {
+                return npcPain;
+            }
+        }
+
+        private SoundEffect npcDeath;
+        public SoundEffect NPCDeath
         {
-            elvenWand = content.Load<SoundEffect>(Path.Combine(SOUNDS_PATH, path));
+            get
+            {
+                return npcDeath;
+            }
+        }
+
+        private SoundEffect npcAttack;
+        public SoundEffect NPCAttack
+        {
+            get
+            {
+                return npcAttack;
+            }
+        }
+
+        private SoundEffect playerPain;
+        public SoundEffect PlayerPain
+        {
+            get
+            {
+                return playerPain;
+            }
+        }
+
+        public Sound(ContentManager content)
+        {
+            elvenWand = content.Load<SoundEffect>(Path.Combine(SOUNDS_PATH, "GLDHIT"));
+            npcPain = content.Load<SoundEffect>(Path.Combine(SOUNDS_PATH, "IMPPAI"));
+            npcDeath = content.Load<SoundEffect>(Path.Combine(SOUNDS_PATH, "IMPDTH"));
+            npcAttack = content.Load<SoundEffect>(Path.Combine(SOUNDS_PATH, "IMPAT2"));
+            playerPain = content.Load<SoundEffect>(Path.Combine(SOUNDS_PATH, "PLRPAI"));
         }
     }
 }
