@@ -35,6 +35,11 @@
     <Folder Include="Content\Sprites\NPCs\Imp\Walk\" />
     <Folder Include="Content\Sprites\NPCs\Imp\Pain\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Update="heretic.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
     <Message Text="Restoring dotnet tools" Importance="High" />
     <Exec Command="dotnet tool restore" />

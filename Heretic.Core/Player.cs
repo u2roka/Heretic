@@ -16,6 +16,8 @@ namespace Heretic
         public delegate void DeathEventHandler();
         public event DeathEventHandler OnDeath;
 
+        private bool keyF3Down;
+
         private Vector2 position;
         public Vector2 Position
         {
@@ -217,6 +219,16 @@ namespace Heretic
             }
 
             angle %= MathF.Tau;
+
+            if (keys.IsKeyDown(Keys.F3) && !keyF3Down)
+            {
+                Settings.ENABLE_NPC_AI = !Settings.ENABLE_NPC_AI;
+                keyF3Down = true;
+            }
+            if (keys.IsKeyUp(Keys.F3))
+            {
+                keyF3Down = false;
+            }
         }
 
         private void MouseControl(float deltaTime)

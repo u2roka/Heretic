@@ -128,7 +128,7 @@ namespace Heretic.Core
                     offset = sinAngle > 0 ? 1 - horizontal.X: horizontal.X;
                 }
                     
-                depth *= MathF.Cos(player.Angle - rayAngle);
+                depth *= MathF.Cos(player.Angle - rayAngle);                
 
                 projectHeight = Settings.SCREEN_DIST / (depth + 0.0001f);
 

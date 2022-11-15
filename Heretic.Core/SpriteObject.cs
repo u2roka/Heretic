@@ -25,6 +25,14 @@ namespace Heretic.Core
         protected float distance;
         private float normalizedDistance;
 
+        public Point MapPosition
+        {
+            get
+            {
+                return new Point((int)position.X, (int)position.Y);
+            }
+        }
+
         public SpriteObject(ContentManager content, Player player, ObjectRenderer objectRenderer, string path, Vector2 position)
         {
             hasAutoScaleAndShift = true;

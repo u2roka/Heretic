@@ -22,9 +22,9 @@ namespace Heretic
         public Heretic()
         {
             graphics = new GraphicsDeviceManager(this);
-            graphics.IsFullScreen = false;
             graphics.PreferredBackBufferWidth = Settings.WIDTH;
             graphics.PreferredBackBufferHeight = Settings.HEIGHT;
+            graphics.IsFullScreen = Settings.ENABLE_FULLSCREEN;
             IsFixedTimeStep = true;
             TargetElapsedTime = System.TimeSpan.FromSeconds(1d / Settings.FPS);
             graphics.ApplyChanges();
@@ -69,8 +69,8 @@ namespace Heretic
             {
                 player.Update(gameTime);
                 rayCasting.Update();
-                objectHandler.Update(gameTime);
                 pathFinding.Update(objectHandler.NPCPositions);
+                objectHandler.Update(gameTime);
                 weapon.Update(gameTime);
             }
             else

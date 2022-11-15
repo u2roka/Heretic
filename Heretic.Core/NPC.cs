@@ -60,15 +60,7 @@ namespace Heretic.Core
             {
                 return alive;
             }
-        }
-
-        public Point MapPosition
-        {
-            get
-            {
-                return new Point((int)position.X, (int)position.Y);
-            }
-        }
+        }        
 
         public NPC(ContentManager content, Sound sound, Player player, Map map, PathFinding pathFinding, ObjectHandler objectHandler, ObjectRenderer objectRenderer, string path, Vector2 position, float animationTime, float deathAnimationTime, int attackEventImageIndex) 
             : base(content, player, objectRenderer, Path.Combine(NPC_SPRITE_PATH, path), position, animationTime)
@@ -233,12 +225,17 @@ namespace Heretic.Core
             {
                 rayCastValue = RayCastPlayerNPC();
                 CheckHitInNPC();
+
+                if (!Settings.ENABLE_NPC_AI)
+                {
+                    playerSearchTrigger = false;
+                }
                 
                 if (pain)
                 {
                     AnimatePain();
                 }
-                else if (rayCastValue)
+                else if (rayCastValue && Settings.ENABLE_NPC_AI)
                 {
                     playerSearchTrigger = true;
 

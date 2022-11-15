@@ -48,9 +48,7 @@ namespace Heretic
             { 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3 },
             { 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 }
         };
-
-
-        
+                
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             for (int y = 0; y < WorldMap.GetLength(0); y++)
