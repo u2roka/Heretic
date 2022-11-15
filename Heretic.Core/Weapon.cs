@@ -8,21 +8,11 @@ namespace Heretic.Core
     internal class Weapon : AnimatedSprite
     {
         private int frameCounter;
-        
-        private int damage;
-        public int Damage
-        {
-            get
-            {
-                return damage;
-            }
-        }
-
+                
         public Weapon(ContentManager content, Player player, string path, float scale, float animationTime) : base(content, player, null, path, Vector2.Zero, scale, 0f, animationTime)
         {
             position = new Vector2(Settings.HALF_WIDTH, Settings.HEIGHT);
-            damage = 25;
-            player.AttackDamage = damage;
+            player.AttackDamage = random.Next(7, 15);
         }
 
         private void AnimateShot()

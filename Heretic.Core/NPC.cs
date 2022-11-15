@@ -10,9 +10,20 @@ namespace Heretic.Core
 {
     internal class NPC : AnimatedSprite
     {
-        private Random random = new Random();
+        private const string NPC_SPRITE_PATH = @"Sprites\NPCs";
 
-        private int frameCounter;
+        public enum EnemyType
+        {
+            IMP,
+            MUMMY,
+            KNIGHT,
+            MALOTAUR
+        }
+
+        protected EnemyType enemyType;
+
+        private int attackFrameCounter;
+        private int deathFrameCounter;
 
         private LinkedList<Texture2D> attackImages;
         private LinkedList<Texture2D> deathImages;
@@ -20,17 +31,18 @@ namespace Heretic.Core
         private LinkedList<Texture2D> painImages;
         private LinkedList<Texture2D> walkImages;
 
-        private Texture2D attackEventImage;
-        private int attackDistance;
-        private float attackChance;
-        private int attackDamage;
+        protected Texture2D attackEventImage;
+        protected int attackDistance;
+        protected float attackChance;
+        protected int attackDamage;
 
-        private float speed;
-        private int size;
-        private int health;
-        private bool attacking;
+        protected float speed;
+        protected int size;
+        protected int health;
+        protected float accuracy;
+        protected float deathAnimationTime;
 
-        private float accuracy;
+        private bool attacking;        
         private bool pain;
         private bool rayCastValue;
         private bool playerSearchTrigger;
@@ -58,16 +70,18 @@ namespace Heretic.Core
             }
         }
 
-        public NPC(ContentManager content, Sound sound, Player player, Map map, PathFinding pathFinding, ObjectHandler objectHandler, ObjectRenderer objectRenderer, string path, Vector2 position, float animationTime, int attackEventImageIndex) : base(content, player, objectRenderer, path, position, animationTime)
+        public NPC(ContentManager content, Sound sound, Player player, Map map, PathFinding pathFinding, ObjectHandler objectHandler, ObjectRenderer objectRenderer, string path, Vector2 position, float animationTime, float deathAnimationTime, int attackEventImageIndex) 
+            : base(content, player, objectRenderer, Path.Combine(NPC_SPRITE_PATH, path), position, animationTime)
         {
             this.sound = sound;
             this.player = player;
             this.map = map;
             this.pathFinding = pathFinding;
             this.objectHandler = objectHandler;
-            
-            string directory = Path.GetDirectoryName(path);
+            this.deathAnimationTime = deathAnimationTime;
 
+            string directory = Path.Combine(NPC_SPRITE_PATH, Path.GetDirectoryName(path));
+            
             attackImages = GetImages(Path.Combine(directory, "Attack"));
             deathImages = GetImages(Path.Combine(directory, "Death"));
             idleImages = GetImages(Path.Combine(directory, "Idle"));
@@ -75,13 +89,6 @@ namespace Heretic.Core
             walkImages = GetImages(Path.Combine(directory, "Walk"));
 
             attackEventImage = attackImages.ElementAt(attackEventImageIndex);
-            attackDistance = random.Next(3, 7);
-            attackChance = 0.1f;
-            speed = 0.03f;
-            size = 10;
-            health = 100;
-            attackDamage = 10;
-            accuracy = 0.5f;
             alive = true;
         }
 
@@ -108,7 +115,7 @@ namespace Heretic.Core
 
         private void Attack()
         {
-            sound.NPCAttack.Play();
+            sound.NPCAttack(enemyType).Play();
             if (random.NextSingle() < accuracy)
             {
                 player.GetDamage(attackDamage);
@@ -138,7 +145,7 @@ namespace Heretic.Core
         {
             if (animationTrigger)
             {
-                if (frameCounter < attackImages.Count - 1)
+                if (attackFrameCounter < attackImages.Count - 1)
                 {
                     var first = attackImages.First;
                     attackImages.RemoveFirst();
@@ -152,12 +159,12 @@ namespace Heretic.Core
 
                     PrepareSprite();
 
-                    frameCounter++;
+                    attackFrameCounter++;
                 }
 
-                if (frameCounter == attackImages.Count - 1)
+                if (attackFrameCounter == attackImages.Count - 1)
                 {
-                    frameCounter = 0;
+                    attackFrameCounter = 0;
                     attacking = false;
                 }
             }
@@ -167,9 +174,9 @@ namespace Heretic.Core
         {
             if (!alive)
             {
-                animationTime = 0.04f;                
-
-                if (animationTrigger && frameCounter < deathImages.Count - 1)
+                animationTime = deathAnimationTime;
+                
+                if (animationTrigger && deathFrameCounter < deathImages.Count - 1)
                 {
                     var first = deathImages.First;
                     deathImages.RemoveFirst();
@@ -179,7 +186,7 @@ namespace Heretic.Core
 
                     PrepareSprite();
 
-                    frameCounter++;
+                    deathFrameCounter++;
                 }
             }
         }
@@ -189,7 +196,6 @@ namespace Heretic.Core
             Animate(painImages);
             if (animationTrigger)
             {
-                frameCounter = 0;
                 pain = false;
             }
         }
@@ -213,11 +219,11 @@ namespace Heretic.Core
             if (health < 1)
             {
                 alive = false;
-                sound.NPCDeath.Play();
+                sound.NPCDeath(enemyType).Play();
             }
             else 
             { 
-                sound.NPCPain.Play(); 
+                sound.NPCPain(enemyType).Play(); 
             }
         }
 

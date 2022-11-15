@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -8,19 +9,23 @@ namespace Heretic.Core
 {
     internal class AnimatedSprite : SpriteObject
     {
+        protected Random random = new Random();
+
         protected float animationTime;
         protected LinkedList<Texture2D> images;
         private float animationTimePrev;
         protected bool animationTrigger;
 
-        public AnimatedSprite(ContentManager content, Player player, ObjectRenderer objectRenderer, string path, Vector2 position, float animationTime) : base(content, player, objectRenderer, path, position)
+        public AnimatedSprite(ContentManager content, Player player, ObjectRenderer objectRenderer, string path, Vector2 position, float animationTime) 
+            : base(content, player, objectRenderer, path, position)
         {
             hasAutoScaleAndShift = true;
 
             Initialize(path, animationTime);            
         }
 
-        public AnimatedSprite(ContentManager content, Player player, ObjectRenderer objectRenderer, string path, Vector2 position, float scale, float shift, float animationTime) : base(content, player, objectRenderer, path, position, scale, shift)            
+        public AnimatedSprite(ContentManager content, Player player, ObjectRenderer objectRenderer, string path, Vector2 position, float scale, float shift, float animationTime) 
+            : base(content, player, objectRenderer, path, position, scale, shift)            
         {
             hasAutoScaleAndShift = false;
 

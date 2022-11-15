@@ -39,11 +39,11 @@ namespace Heretic
             map = new Map();
             sound = new Sound(Content);
             player = new Player(map, sound);
-            objectRenderer = new ObjectRenderer(Content, player);
+            weapon = new Weapon(Content, player, @"Weapons\Elvenwand\GWNDA0", 1f, 0.09f);
+            objectRenderer = new ObjectRenderer(Content, player, weapon);
             rayCasting = new RayCasting(player, map, objectRenderer);
             pathFinding = new PathFinding(map);
             objectHandler = new ObjectHandler(Content, sound, player, map, pathFinding, objectRenderer);
-            weapon = new Weapon(Content, player, @"Weapons\Elvenwand\GWNDA0", 1f, 0.09f);            
 
             base.Initialize();
         }
@@ -54,7 +54,9 @@ namespace Heretic
 
             // TODO: use this.Content to load your game content here
             objectRenderer.LoadWallTextures();
-            objectRenderer.RegisterPlayerDamageEvent();
+            objectRenderer.LoadDigitTextures();
+            objectRenderer.LoadCharTextures();
+            objectRenderer.RegisterPlayerEvents();
         }
 
         protected override void Update(GameTime gameTime)
@@ -63,11 +65,21 @@ namespace Heretic
                 Exit();
 
             // TODO: Add your update logic here
-            player.Update(gameTime);
-            rayCasting.Update();
-            objectHandler.Update(gameTime);
-            pathFinding.Update(objectHandler.NPCPositions);
-            weapon.Update(gameTime);            
+            if (player.Active)
+            {
+                player.Update(gameTime);
+                rayCasting.Update();
+                objectHandler.Update(gameTime);
+                pathFinding.Update(objectHandler.NPCPositions);
+                weapon.Update(gameTime);
+            }
+            else
+            {
+                if (GamePad.GetState(PlayerIndex.One).Buttons.Start == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Enter))
+                {
+                    Initialize();
+                }   
+            }
 
             base.Update(gameTime);
         }
@@ -80,7 +92,6 @@ namespace Heretic
             spriteBatch.Begin();
 
             objectRenderer.Draw(gameTime, spriteBatch);
-            weapon.Draw(gameTime, spriteBatch);
             //map.Draw(gameTime, spriteBatch);
             //objectHandler.Draw(gameTime, spriteBatch);
             //player.Draw(gameTime, spriteBatch);

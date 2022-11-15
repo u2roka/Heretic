@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
-using System.Runtime.Serialization;
 
 namespace Heretic
 {

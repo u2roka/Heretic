@@ -13,6 +13,9 @@ namespace Heretic
         public delegate void DamageEventHandler();
         public event DamageEventHandler OnDamage;
 
+        public delegate void DeathEventHandler();
+        public event DeathEventHandler OnDeath;
+
         private Vector2 position;
         public Vector2 Position
         {
@@ -89,25 +92,86 @@ namespace Heretic
 
         private Map map;
         private Sound sound;
+        private float healthRecoveryDelay;
+        private float timePrev;
+
+        private bool killedAllEnemies;
+        public bool KilledAllEnemies
+        {
+            get
+            {
+                return killedAllEnemies;
+            }
+            set
+            {
+                killedAllEnemies = value;
+            }
+        }
 
         private int health;
+        public string Health
+        {
+            get
+            {
+                return health.ToString();
+            }
+        }        
+        public bool Active
+        {
+            get
+            {
+                return health > 0 && !KilledAllEnemies;
+            }
+        }
 
         public Player(Map map, Sound sound)
         {
             this.map = map;
             this.sound = sound;
 
+            healthRecoveryDelay = 0.7f;
+
             position = Settings.PLAYER_POS;
             angle = Settings.PLAYER_ANGLE;
             health = Settings.PLAYER_MAX_HEALTH;            
         }
 
+        private void RecoveryHealth(GameTime gameTime)
+        {
+            if (CheckHealthRecoveryDelay(gameTime) && health < Settings.PLAYER_MAX_HEALTH)
+            {
+                health++;
+            }
+        }
+
+        private bool CheckHealthRecoveryDelay(GameTime gameTime)
+        {
+            float timeNow = (float)gameTime.TotalGameTime.TotalSeconds;
+            if (timeNow - timePrev > healthRecoveryDelay)
+            {
+                timePrev = timeNow;
+                return true;
+            }
+
+            return false;
+        }
+
         public void GetDamage(int attackDamage)
         {
-            health -= attackDamage;
-            sound.PlayerPain.Play();
+            health -= attackDamage;            
+            
+            if (health < 1)
+            {
+                health = 0;
 
-            OnDamage();
+                sound.PlayerDeath.Play();
+                OnDeath();
+            }
+            else
+            {
+                sound.PlayerPain.Play();
+                OnDamage();
+            }
         }
 
         private void Movement(float deltaTime)
@@ -183,6 +247,7 @@ namespace Heretic
 
             Movement(deltaTime);
             MouseControl(deltaTime);
+            RecoveryHealth(gameTime);
         }
 
         private bool CheckWall(Point position)
