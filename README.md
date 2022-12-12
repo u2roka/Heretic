@@ -6,9 +6,9 @@
 https://youtu.be/QuSMRnOU1W8
 
 ## Control
-- **Move, strafe**: W, A, S, D
-- **Horizontal freelook**: mouse
-- **Fire**: left mouse button
+- **Move, strafe**: W, A, S, D or Controller left stick
+- **Horizontal freelook**: mouse or Controller right stick
+- **Fire**: left mouse button or Controller right trigger
 - **Toggle AI**: F3
 
 ## Options

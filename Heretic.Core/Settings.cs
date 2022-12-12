@@ -29,6 +29,8 @@ namespace Heretic
         public static int MOUSE_BORDER_LEFT = 100;
         public static int MOUSE_BORDER_RIGHT = WIDTH - MOUSE_BORDER_LEFT;
 
+        public static float CONTROLLER_DEAD_ZONE = 0.5f;
+
         public static Color FLOOR_COLOR = new Color(30, 30, 30);
 
         public static float FOV = int.Parse(PARSER.GetSetting("render", "fov")) * MathF.PI / 180;

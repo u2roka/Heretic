@@ -186,22 +186,22 @@ namespace Heretic
             Vector2 delta = Vector2.Zero;
 
             var keys = Keyboard.GetState();
-            if (keys.IsKeyDown(Keys.W))
+            if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y > Settings.CONTROLLER_DEAD_ZONE || keys.IsKeyDown(Keys.W))
             {
                 delta.X += speedCos;
                 delta.Y += speedSin;
             }
-            if (keys.IsKeyDown(Keys.S))
+            if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.Y < -Settings.CONTROLLER_DEAD_ZONE || keys.IsKeyDown(Keys.S))
             {
                 delta.X -= speedCos;
                 delta.Y -= speedSin;
             }
-            if (keys.IsKeyDown(Keys.A))
+            if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.X < -Settings.CONTROLLER_DEAD_ZONE || keys.IsKeyDown(Keys.A))
             {
                 delta.X += speedSin;
                 delta.Y += -speedCos;
             }
-            if (keys.IsKeyDown(Keys.D))
+            if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Left.X > Settings.CONTROLLER_DEAD_ZONE || keys.IsKeyDown(Keys.D))
             {
                 delta.X += -speedSin;
                 delta.Y += speedCos;
@@ -209,11 +209,11 @@ namespace Heretic
 
             CheckWallCollision(deltaTime, delta);
 
-            if (keys.IsKeyDown(Keys.Left))
+            if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Right.X < -Settings.CONTROLLER_DEAD_ZONE || keys.IsKeyDown(Keys.Left))
             {
                 angle -= Settings.PLAYER_ROT_SPEED * deltaTime;
             }
-            if (keys.IsKeyDown(Keys.Right))
+            if (GamePad.GetState(PlayerIndex.One).ThumbSticks.Right.X > Settings.CONTROLLER_DEAD_ZONE || keys.IsKeyDown(Keys.Right))
             {
                 angle += Settings.PLAYER_ROT_SPEED * deltaTime;
             }
@@ -245,7 +245,7 @@ namespace Heretic
             angle += relativeMovement * Settings.MOUSE_SENSITIVITY * deltaTime;
             Mouse.SetPosition(Settings.HALF_WIDTH, Settings.HALF_HEIGHT);
 
-            if (mouseState.LeftButton == ButtonState.Pressed && !Shot && !Reloading)
+            if ((GamePad.GetState(PlayerIndex.One).Triggers.Right > Settings.CONTROLLER_DEAD_ZONE || mouseState.LeftButton == ButtonState.Pressed) && !Shot && !Reloading)
             {
                 sound.ElvenWand.Play();
                 Shot = true;
